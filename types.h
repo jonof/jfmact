@@ -76,6 +76,11 @@ typedef float64                 appfloat;
 #define true ( 1 == 1 )
 #define false ( ! true )
 
+#ifndef TRUE
+   #define TRUE ( 1 == 1 )
+   #define FALSE ( !TRUE )
+#endif
+
 //***************************************************************************
 //
 //  BYTE ACCESS MACROS

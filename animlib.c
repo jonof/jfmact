@@ -42,7 +42,7 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 // LOCALS
 //
 //****************************************************************************
-anim_t * anim=NULL;
+static anim_t * anim=NULL;
 static boolean Anim_Started = false;
 
 //****************************************************************************
@@ -260,7 +260,7 @@ void ANIM_LoadAnim (char * buffer)
    int32 size;
 
    if (!Anim_Started) {
-//	   anim = SafeMalloc(sizeof(anim_t));
+	   anim = SafeMalloc(sizeof(anim_t));
 	   Anim_Started = true;
    }
 
@@ -313,7 +313,7 @@ void ANIM_FreeAnim ( void )
    {
    if (Anim_Started)
       {
-//      SafeFree(anim);
+      SafeFree(anim);
       Anim_Started = false;
       }
    }
