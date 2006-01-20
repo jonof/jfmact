@@ -65,7 +65,7 @@ int32 SafeOpen(const char *filename, int32 mode, int32 sharemode)
 
 	if (h < MaxFiles) {
 		if (FileNames[h]) SafeFree(FileNames[h]);
-		FileNames[h] = (char*)SafeMalloc(strlen(filename));
+		FileNames[h] = (char*)SafeMalloc(strlen(filename)+1);
 		if (FileNames[h]) strcpy(FileNames[h], filename);
 	}
 
