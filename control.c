@@ -872,7 +872,7 @@ boolean CONTROL_Startup(controltype which, int32 ( *TimeFunction )( void ), int3
 	//	case controltype_keyboardandjoystick:
 			CONTROL_NumJoyAxes    = min(MAXJOYAXES,joynumaxes);
 			CONTROL_NumJoyButtons = min(MAXJOYBUTTONS,joynumbuttons + 4*(joynumhats>0));
-			CONTROL_JoyPresent    = ((inputdevices & 3) == 3);
+			CONTROL_JoyPresent    = ((inputdevices & 4) == 4);
 			CONTROL_JoystickEnabled = CONTROL_JoyPresent;
 	//		break;
 	//}
