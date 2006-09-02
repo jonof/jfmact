@@ -130,7 +130,7 @@ void CONTROL_CenterJoystick
 
 boolean CONTROL_StartJoy(int32 joy)
 {
-	return (inputdevices & 3) == 3;
+	return (inputdevices & 4) == 4;
 }
 
 void CONTROL_ShutJoy(int32 joy)
@@ -872,7 +872,7 @@ boolean CONTROL_Startup(controltype which, int32 ( *TimeFunction )( void ), int3
 	//	case controltype_keyboardandjoystick:
 			CONTROL_NumJoyAxes    = min(MAXJOYAXES,joynumaxes);
 			CONTROL_NumJoyButtons = min(MAXJOYBUTTONS,joynumbuttons + 4*(joynumhats>0));
-			CONTROL_JoyPresent    = ((inputdevices & 4) == 4);
+			CONTROL_JoyPresent    = CONTROL_StartJoy(0);
 			CONTROL_JoystickEnabled = CONTROL_JoyPresent;
 	//		break;
 	//}
@@ -899,8 +899,6 @@ boolean CONTROL_Startup(controltype which, int32 ( *TimeFunction )( void ), int3
 
 void CONTROL_Shutdown(void)
 {
-	int i;
-	
 	if (!CONTROL_Started) return;
 
 	CONTROL_JoyPresent = false;
