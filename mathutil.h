@@ -26,9 +26,15 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 */
 //-------------------------------------------------------------------------
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern int32 FindDistance2D(int32 dx, int32 dy);
 extern int32 FindDistance3D(int32 dx, int32 dy, int32 dz);
 extern int32 FindDistance3D_HP(int32 dx, int32 dy, int32 dz);
 extern int32 ArcTangentAppx(int32 dx, int32 dy);
 
+#ifdef __cplusplus
+}
+#endif
