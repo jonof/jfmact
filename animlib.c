@@ -254,7 +254,7 @@ void drawframe (uint16 framenumber)
 //
 //****************************************************************************
 
-void ANIM_LoadAnim (char * buffer)
+void ANIM_LoadAnim (unsigned char * buffer)
    {
    uint16 i;
    int32 size;
