@@ -123,7 +123,7 @@ void loadpage (uint16 pagenumber, uint16 *pagepointer)
 //
 //****************************************************************************
 
-void CPlayRunSkipDump (char *srcP, char *dstP)
+void CPlayRunSkipDump (byte *srcP, byte *dstP)
    {
    signed char cnt;
    uint16 wordCnt;

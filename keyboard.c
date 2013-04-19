@@ -271,7 +271,7 @@ boolean KB_KeypadActive( void )
 	return numpad;
 }
 
-static void KB_KeyEvent( long scancode, long keypressed )
+static void KB_KeyEvent( int scancode, int keypressed )
 {
 	if (keypressed) KB_LastScan = scancode;
 }
@@ -284,6 +284,6 @@ void KB_Startup( void )
 
 void KB_Shutdown( void )
 {
-	setkeypresscallback((void(*)(long,long))NULL);
+	setkeypresscallback(NULL);
 }
 

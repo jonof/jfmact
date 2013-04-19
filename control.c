@@ -6,16 +6,16 @@
  *
  */
 
+#include "compat.h"
+#include "baselayer.h"
+#include "pragmas.h"
+
 #include "types.h"
 #include "keyboard.h"
 #include "mouse.h"
 #include "control.h"
 #include "_control.h"
 #include "util_lib.h"
-
-#include "baselayer.h"
-#include "compat.h"
-#include "pragmas.h"
 
 
 boolean CONTROL_JoyPresent = false;
@@ -230,14 +230,14 @@ void CONTROL_PrintKeyMap(void)
 	int32 i;
 
 	for (i=0;i<CONTROL_NUM_FLAGS;i++) {
-		initprintf("function %2ld key1=%3x key2=%3x\n",
+		initprintf("function %2d key1=%3x key2=%3x\n",
 			i, CONTROL_KeyMapping[i].key1, CONTROL_KeyMapping[i].key2);
 	}
 }
 
 void CONTROL_PrintControlFlag(int32 which)
 {
-	initprintf("function %2ld active=%d used=%d toggle=%d buttonheld=%d cleared=%ld\n",
+	initprintf("function %2d active=%d used=%d toggle=%d buttonheld=%d cleared=%d\n",
 		which, CONTROL_Flags[which].active, CONTROL_Flags[which].used,
 		CONTROL_Flags[which].toggle, CONTROL_Flags[which].buttonheld,
 		CONTROL_Flags[which].cleared);
@@ -247,16 +247,16 @@ void CONTROL_PrintAxes(void)
 {
 	int32 i;
 
-	initprintf("nummouseaxes=%ld\n", CONTROL_NumMouseAxes);
+	initprintf("nummouseaxes=%d\n", CONTROL_NumMouseAxes);
 	for (i=0;i<CONTROL_NumMouseAxes;i++) {
-		initprintf("axis=%ld analog=%d digital1=%d digital2=%d\n",
+		initprintf("axis=%d analog=%d digital1=%d digital2=%d\n",
 				i, CONTROL_MouseAxesMap[i].analogmap,
 				CONTROL_MouseAxesMap[i].minmap, CONTROL_MouseAxesMap[i].maxmap);
 	}
 
-	initprintf("numjoyaxes=%ld\n", CONTROL_NumJoyAxes);
+	initprintf("numjoyaxes=%d\n", CONTROL_NumJoyAxes);
 	for (i=0;i<CONTROL_NumJoyAxes;i++) {
-		initprintf("axis=%ld analog=%d digital1=%d digital2=%d\n",
+		initprintf("axis=%d analog=%d digital1=%d digital2=%d\n",
 				i, CONTROL_JoyAxesMap[i].analogmap,
 				CONTROL_JoyAxesMap[i].minmap, CONTROL_JoyAxesMap[i].maxmap);
 	}
