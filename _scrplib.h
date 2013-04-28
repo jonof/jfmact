@@ -152,7 +152,7 @@ ScriptLineType * SCRIPT_AddLine
 ScriptSectionType * SCRIPT_SectionExists
    (
    int32 scripthandle,
-   char * sectionname
+   const char * sectionname
    );
 
 /*
@@ -162,7 +162,7 @@ ScriptSectionType * SCRIPT_SectionExists
 =
 ==============
 */
-ScriptSectionType * SCRIPT_AddSection( int32 scripthandle, char * sectionname );
+ScriptSectionType * SCRIPT_AddSection( int32 scripthandle, const char * sectionname );
 
 /*
 ==============
@@ -174,7 +174,7 @@ ScriptSectionType * SCRIPT_AddSection( int32 scripthandle, char * sectionname );
 ScriptEntryType * SCRIPT_EntryExists
    (
    ScriptSectionType * section,
-   char * entryname
+   const char * entryname
    );
 
 /*
@@ -187,9 +187,9 @@ ScriptEntryType * SCRIPT_EntryExists
 void SCRIPT_AddEntry
    (
    int32 scripthandle,
-   char * sectionname,
-   char * entryname,
-   char * entryvalue
+   const char * sectionname,
+   const char * entryname,
+   const char * entryvalue
    );
 
 /*
@@ -200,7 +200,7 @@ void SCRIPT_AddEntry
 ==============
 */
 
-void SCRIPT_DecodeToken ( int32 scripthandle, char * str );
+void SCRIPT_DecodeToken ( int32 scripthandle, const char * str );
 
 
 #ifdef __cplusplus

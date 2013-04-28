@@ -42,7 +42,7 @@ extern "C" {
 #endif
 
 void RegisterShutdownFunction( void (* sh) (void) );
-void   Error (char *error, ...);
+void   Error (const char *error, ...);
 
 char   CheckParm (char *check);
 

@@ -128,7 +128,7 @@ void SCRIPT_FreeSection(ScriptSectionType * section)
 		(e)->preventry = (e); \
 	}
 
-ScriptSectionType * SCRIPT_SectionExists( int32 scripthandle, char * sectionname )
+ScriptSectionType * SCRIPT_SectionExists( int32 scripthandle, const char * sectionname )
 {
 	ScriptSectionType *s, *ls=NULL;
 
@@ -143,7 +143,7 @@ ScriptSectionType * SCRIPT_SectionExists( int32 scripthandle, char * sectionname
 	return NULL;
 }
 
-ScriptSectionType * SCRIPT_AddSection( int32 scripthandle, char * sectionname )
+ScriptSectionType * SCRIPT_AddSection( int32 scripthandle, const char * sectionname )
 {
 	ScriptSectionType *s,*s2;
 
@@ -168,7 +168,7 @@ ScriptSectionType * SCRIPT_AddSection( int32 scripthandle, char * sectionname )
 	return s;
 }
 
-ScriptEntryType * SCRIPT_EntryExists ( ScriptSectionType * section, char * entryname )
+ScriptEntryType * SCRIPT_EntryExists ( ScriptSectionType * section, const char * entryname )
 {
 	ScriptEntryType *e,*le=NULL;
 
@@ -182,7 +182,7 @@ ScriptEntryType * SCRIPT_EntryExists ( ScriptSectionType * section, char * entry
 	return NULL;
 }
 
-void SCRIPT_AddEntry ( int32 scripthandle, char * sectionname, char * entryname, char * entryvalue )
+void SCRIPT_AddEntry ( int32 scripthandle, const char * sectionname, const char * entryname, const char * entryvalue )
 {
 	ScriptSectionType *s;
 	ScriptEntryType *e,*e2;
@@ -396,7 +396,7 @@ int32 SCRIPT_ParseBuffer(int32 scripthandle, char *data, int32 length)
 
 //---
 
-int32 SCRIPT_Init( char * name )
+int32 SCRIPT_Init( const char * name )
 {
 	int32 h = SCRIPT_New();
 
@@ -410,12 +410,12 @@ void SCRIPT_Free( int32 scripthandle )
 	SCRIPT_Delete(scripthandle);
 }
 
-int32 SCRIPT_Parse ( char *data, int32 length, char * name )
+int32 SCRIPT_Parse ( char *UNUSED(data), int32 UNUSED(length), char * UNUSED(name) )
 {
 	return 0;
 }
 
-int32 SCRIPT_Load ( char * filename )
+int32 SCRIPT_Load ( const char * filename )
 {
 	int32 s,h,l;
 	char *b;
@@ -440,9 +440,9 @@ int32 SCRIPT_Load ( char * filename )
 	return s;
 }
 
-void SCRIPT_Save (int32 scripthandle, char * filename)
+void SCRIPT_Save (int32 scripthandle, const char * filename)
 {
-	char *section, *entry, *value;
+	const char *section, *entry, *value;
 	int sec, ent, numsect, nument;
 	FILE *fp;
 	
@@ -497,7 +497,7 @@ char * SCRIPT_Section( int32 scripthandle, int32 which )
 	return s->name;
 }
 
-int32 SCRIPT_NumberEntries( int32 scripthandle, char * sectionname )
+int32 SCRIPT_NumberEntries( int32 scripthandle, const char * sectionname )
 {
 	ScriptSectionType *s;
 	ScriptEntryType *e,*le=NULL;
@@ -513,7 +513,7 @@ int32 SCRIPT_NumberEntries( int32 scripthandle, char * sectionname )
 	return c;
 }
 
-char * SCRIPT_Entry( int32 scripthandle, char * sectionname, int32 which )
+const char * SCRIPT_Entry( int32 scripthandle, const char * sectionname, int32 which )
 {
 	ScriptSectionType *s;
 	ScriptEntryType *e,*le=NULL;
@@ -528,7 +528,7 @@ char * SCRIPT_Entry( int32 scripthandle, char * sectionname, int32 which )
 	return e->name;
 }
 
-char * SCRIPT_GetRaw(int32 scripthandle, char * sectionname, char * entryname)
+const char * SCRIPT_GetRaw(int32 scripthandle, const char * sectionname, const char * entryname)
 {
 	ScriptSectionType *s;
 	ScriptEntryType *e;
@@ -543,7 +543,7 @@ char * SCRIPT_GetRaw(int32 scripthandle, char * sectionname, char * entryname)
 	return e->value;
 }
 
-boolean SCRIPT_GetString( int32 scripthandle, char * sectionname, char * entryname, char * dest )
+boolean SCRIPT_GetString( int32 scripthandle, const char * sectionname, const char * entryname, char * dest )
 {
 	ScriptSectionType *s;
 	ScriptEntryType *e;
@@ -595,11 +595,12 @@ boolean SCRIPT_GetString( int32 scripthandle, char * sectionname, char * entryna
 	return 0;
 }
 
-boolean SCRIPT_GetDoubleString( int32 scripthandle, char * sectionname, char * entryname, char * dest1, char * dest2 )
+boolean SCRIPT_GetDoubleString( int32 scripthandle, const char * sectionname, const char * entryname, char * dest1, char * dest2 )
 {
 	ScriptSectionType *s;
 	ScriptEntryType *e;
-	char *p, ch;
+	const char *p;
+    char ch;
 	int c,d=0;
 
 	if (!SC(scripthandle)) return 1;
@@ -685,7 +686,7 @@ breakme:
 	return 0;
 }
 
-boolean SCRIPT_GetNumber( int32 scripthandle, char * sectionname, char * entryname, int32 * number )
+boolean SCRIPT_GetNumber( int32 scripthandle, const char * sectionname, const char * entryname, int32 * number )
 {
 	ScriptSectionType *s;
 	ScriptEntryType *e;
@@ -713,7 +714,7 @@ boolean SCRIPT_GetNumber( int32 scripthandle, char * sectionname, char * entryna
 	return 0;
 }
 
-boolean SCRIPT_GetBoolean( int32 scripthandle, char * sectionname, char * entryname, boolean * boole )
+boolean SCRIPT_GetBoolean( int32 scripthandle, const char * sectionname, const char * entryname, boolean * boole )
 {
 	ScriptSectionType *s;
 	ScriptEntryType *e;
@@ -735,7 +736,7 @@ boolean SCRIPT_GetBoolean( int32 scripthandle, char * sectionname, char * entryn
 	return 0;
 }
 
-boolean SCRIPT_GetDouble( int32 scripthandle, char * sectionname, char * entryname, double * number )
+boolean SCRIPT_GetDouble( int32 scripthandle, const char * sectionname, const char * entryname, double * UNUSED(number) )
 {
 	ScriptSectionType *s;
 	ScriptEntryType *e;
@@ -748,30 +749,33 @@ boolean SCRIPT_GetDouble( int32 scripthandle, char * sectionname, char * entryna
 	
 	if (!e) return 1;// *number = 0.0;
 	else {
+        //XXX
 	}
 
 	return 0;
 }
 
-void SCRIPT_PutComment( int32 scripthandle, char * sectionname, char * comment )
+void SCRIPT_PutComment( int32 UNUSED(scripthandle), const char * UNUSED(sectionname), const char * UNUSED(comment) )
 {
+    //XXX
 }
 
-void SCRIPT_PutEOL( int32 scripthandle, char * sectionname )
+void SCRIPT_PutEOL( int32 UNUSED(scripthandle), const char * UNUSED(sectionname) )
 {
+    //XXX
 }
 
 void SCRIPT_PutMultiComment
    (
-   int32 scripthandle,
-   char * sectionname,
-   char * comment,
+   int32 UNUSED(scripthandle),
+   const char * UNUSED(sectionname),
+   const char * UNUSED(comment),
    ...
    )
 {
 }
 
-void SCRIPT_PutSection( int32 scripthandle, char * sectionname )
+void SCRIPT_PutSection( int32 scripthandle, const char * sectionname )
 {
 	SCRIPT_AddSection(scripthandle, sectionname);
 }
@@ -779,9 +783,9 @@ void SCRIPT_PutSection( int32 scripthandle, char * sectionname )
 void SCRIPT_PutRaw
    (
    int32 scripthandle,
-   char * sectionname,
-   char * entryname,
-   char * raw
+   const char * sectionname,
+   const char * entryname,
+   const char * raw
    )
 {
 	SCRIPT_AddEntry(scripthandle, sectionname, entryname, raw);
@@ -790,12 +794,13 @@ void SCRIPT_PutRaw
 void SCRIPT_PutString
    (
    int32 scripthandle,
-   char * sectionname,
-   char * entryname,
-   char * string
+   const char * sectionname,
+   const char * entryname,
+   const char * string
    )
 {
-	char *raw,*q,*p;
+	char *raw,*p;
+    const char *q;
 	int len = 3;
 	if (!string) string = "";
 
@@ -822,13 +827,14 @@ void SCRIPT_PutString
 void SCRIPT_PutDoubleString
    (
    int32 scripthandle,
-   char * sectionname,
-   char * entryname,
-   char * string1,
-   char * string2
+   const char * sectionname,
+   const char * entryname,
+   const char * string1,
+   const char * string2
    )
 {
-	char *raw,*q,*p;
+	char *raw,*p;
+    const char *q;
 	int len = 6;
 	if (!string1) string1 = "";
 	if (!string2) string2 = "";
@@ -870,11 +876,11 @@ void SCRIPT_PutDoubleString
 void SCRIPT_PutNumber
    (
    int32 scripthandle,
-   char * sectionname,
-   char * entryname,
+   const char * sectionname,
+   const char * entryname,
    int32 number,
    boolean hexadecimal,
-   boolean defaultvalue
+   boolean UNUSED(defaultvalue)
    )
 {
 	char raw[64];
@@ -888,8 +894,8 @@ void SCRIPT_PutNumber
 void SCRIPT_PutBoolean
    (
    int32 scripthandle,
-   char * sectionname,
-   char * entryname,
+   const char * sectionname,
+   const char * entryname,
    boolean boole
    )
 {
@@ -903,10 +909,10 @@ void SCRIPT_PutBoolean
 void SCRIPT_PutDouble
    (
    int32 scripthandle,
-   char * sectionname,
-   char * entryname,
+   const char * sectionname,
+   const char * entryname,
    double number,
-   boolean defaultvalue
+   boolean UNUSED(defaultvalue)
    )
 {
 	char raw[64];
