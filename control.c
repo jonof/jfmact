@@ -230,14 +230,14 @@ void CONTROL_PrintKeyMap(void)
 	int32 i;
 
 	for (i=0;i<CONTROL_NUM_FLAGS;i++) {
-		initprintf("function %2d key1=%3x key2=%3x\n",
+		buildprintf("function %2d key1=%3x key2=%3x\n",
 			i, CONTROL_KeyMapping[i].key1, CONTROL_KeyMapping[i].key2);
 	}
 }
 
 void CONTROL_PrintControlFlag(int32 which)
 {
-	initprintf("function %2d active=%d used=%d toggle=%d buttonheld=%d cleared=%d\n",
+	buildprintf("function %2d active=%d used=%d toggle=%d buttonheld=%d cleared=%d\n",
 		which, CONTROL_Flags[which].active, CONTROL_Flags[which].used,
 		CONTROL_Flags[which].toggle, CONTROL_Flags[which].buttonheld,
 		CONTROL_Flags[which].cleared);
@@ -247,16 +247,16 @@ void CONTROL_PrintAxes(void)
 {
 	int32 i;
 
-	initprintf("nummouseaxes=%d\n", CONTROL_NumMouseAxes);
+	buildprintf("nummouseaxes=%d\n", CONTROL_NumMouseAxes);
 	for (i=0;i<CONTROL_NumMouseAxes;i++) {
-		initprintf("axis=%d analog=%d digital1=%d digital2=%d\n",
+		buildprintf("axis=%d analog=%d digital1=%d digital2=%d\n",
 				i, CONTROL_MouseAxesMap[i].analogmap,
 				CONTROL_MouseAxesMap[i].minmap, CONTROL_MouseAxesMap[i].maxmap);
 	}
 
-	initprintf("numjoyaxes=%d\n", CONTROL_NumJoyAxes);
+	buildprintf("numjoyaxes=%d\n", CONTROL_NumJoyAxes);
 	for (i=0;i<CONTROL_NumJoyAxes;i++) {
-		initprintf("axis=%d analog=%d digital1=%d digital2=%d\n",
+		buildprintf("axis=%d analog=%d digital1=%d digital2=%d\n",
 				i, CONTROL_JoyAxesMap[i].analogmap,
 				CONTROL_JoyAxesMap[i].minmap, CONTROL_JoyAxesMap[i].maxmap);
 	}
@@ -878,9 +878,9 @@ boolean CONTROL_Startup(controltype which, int32 ( *TimeFunction )( void ), int3
 	//}
 	
 	if (CONTROL_MousePresent)
-		initprintf("CONTROL_Startup: Mouse Present\n");
+		buildprintf("CONTROL_Startup: Mouse Present\n");
 	if (CONTROL_JoyPresent)
-		initprintf("CONTROL_Startup: Joystick Present\n");
+		buildprintf("CONTROL_Startup: Joystick Present\n");
 
 	CONTROL_ButtonState1     = 0;
 	CONTROL_ButtonState2     = 0;
