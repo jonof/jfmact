@@ -6,7 +6,7 @@
  *
  */
 
-#include "compat.h"
+#include "build.h"
 #include "baselayer.h"
 #include "pragmas.h"
 
