@@ -184,6 +184,8 @@ void CONTROL_CenterJoystick
    );
 int32 CONTROL_GetMouseSensitivity( void );
 void CONTROL_SetMouseSensitivity( int32 newsensitivity );
+void CONTROL_SetJoyAxisDead(int32 axis, int32 newdead);    // 0-0x7fff
+void CONTROL_SetJoyAxisSaturate(int32 axis, int32 newsatur);   //0-0x7fff
 boolean CONTROL_Startup
    (
    controltype which,
@@ -215,7 +217,7 @@ void CONTROL_SetAnalogAxisScale
    int32 axisscale,
    controldevice device
    );
-
+    
 void CONTROL_PrintKeyMap(void);
 void CONTROL_PrintControlFlag(int32 which);
 void CONTROL_PrintAxes( void );

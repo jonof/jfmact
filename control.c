@@ -34,21 +34,29 @@ static int32 CONTROL_NumMouseAxes = 0;
 static int32 CONTROL_NumJoyButtons = 0;
 static int32 CONTROL_NumJoyAxes = 0;
 static controlflags       CONTROL_Flags[CONTROL_NUM_FLAGS];
-static controlbuttontype  CONTROL_MouseButtonMapping[MAXMOUSEBUTTONS],
-                          CONTROL_JoyButtonMapping[MAXJOYBUTTONS];
+static controlbuttontype  CONTROL_MouseButtonMapping[MAXMOUSEBUTTONS];
+static controlbuttontype  CONTROL_JoyButtonMapping[MAXJOYBUTTONS];
 static controlkeymaptype  CONTROL_KeyMapping[CONTROL_NUM_FLAGS];
-static controlaxismaptype CONTROL_MouseAxesMap[MAXMOUSEAXES],	// maps physical axes onto virtual ones
-                          CONTROL_JoyAxesMap[MAXJOYAXES];
-static controlaxistype    CONTROL_MouseAxes[MAXMOUSEAXES],	// physical axes
-                          CONTROL_JoyAxes[MAXJOYAXES];
-static controlaxistype    CONTROL_LastMouseAxes[MAXMOUSEAXES],
-                          CONTROL_LastJoyAxes[MAXJOYAXES];
-static int32   CONTROL_MouseAxesScale[MAXMOUSEAXES],             CONTROL_JoyAxesScale[MAXJOYAXES];
-static int32   CONTROL_MouseButtonState[MAXMOUSEBUTTONS],        CONTROL_JoyButtonState[MAXJOYBUTTONS];
-static int32   CONTROL_MouseButtonClickedTime[MAXMOUSEBUTTONS],  CONTROL_JoyButtonClickedTime[MAXJOYBUTTONS];
-static boolean CONTROL_MouseButtonClickedState[MAXMOUSEBUTTONS], CONTROL_JoyButtonClickedState[MAXJOYBUTTONS];
-static boolean CONTROL_MouseButtonClicked[MAXMOUSEBUTTONS],      CONTROL_JoyButtonClicked[MAXJOYBUTTONS];
-static byte    CONTROL_MouseButtonClickedCount[MAXMOUSEBUTTONS], CONTROL_JoyButtonClickedCount[MAXJOYBUTTONS];
+static controlaxismaptype CONTROL_MouseAxesMap[MAXMOUSEAXES];	// maps physical axes onto virtual ones
+static controlaxismaptype CONTROL_JoyAxesMap[MAXJOYAXES];
+static controlaxistype    CONTROL_MouseAxes[MAXMOUSEAXES];	// physical axes
+static controlaxistype    CONTROL_JoyAxes[MAXJOYAXES];
+static controlaxistype    CONTROL_LastMouseAxes[MAXMOUSEAXES];
+static controlaxistype    CONTROL_LastJoyAxes[MAXJOYAXES];
+static int32   CONTROL_MouseAxesScale[MAXMOUSEAXES];
+static int32   CONTROL_JoyAxesScale[MAXJOYAXES];
+static int32   CONTROL_JoyAxesDead[MAXJOYAXES];
+static int32   CONTROL_JoyAxesSaturate[MAXJOYAXES];
+static int32   CONTROL_MouseButtonState[MAXMOUSEBUTTONS];
+static int32   CONTROL_JoyButtonState[MAXJOYBUTTONS];
+static int32   CONTROL_MouseButtonClickedTime[MAXMOUSEBUTTONS];
+static int32   CONTROL_JoyButtonClickedTime[MAXJOYBUTTONS];
+static boolean CONTROL_MouseButtonClickedState[MAXMOUSEBUTTONS];
+static boolean CONTROL_JoyButtonClickedState[MAXJOYBUTTONS];
+static boolean CONTROL_MouseButtonClicked[MAXMOUSEBUTTONS];
+static boolean CONTROL_JoyButtonClicked[MAXJOYBUTTONS];
+static byte    CONTROL_MouseButtonClickedCount[MAXMOUSEBUTTONS];
+static byte    CONTROL_JoyButtonClickedCount[MAXJOYBUTTONS];
 static boolean CONTROL_UserInputCleared[3];
 static int32 (*GetTime)(void);
 static boolean CONTROL_Started = false;
@@ -76,8 +84,8 @@ void CONTROL_GetMouseDelta(void)
 	//CONTROL_MouseAxes[1].analog = mulscale6(y, CONTROL_MouseSensitivity);
 	
 	// DOS axis coefficients = 32,96
-	CONTROL_MouseAxes[0].analog = (x * 48 * CONTROL_MouseSensitivity) >> 15;
-	CONTROL_MouseAxes[1].analog = (y * 48*4 * CONTROL_MouseSensitivity) >> 15;
+	CONTROL_MouseAxes[0].analog = (x * CONTROL_MouseSensitivity) >> 15;
+	CONTROL_MouseAxes[1].analog = (y * CONTROL_MouseSensitivity) >> 15;
 }
 
 int32 CONTROL_GetMouseSensitivity(void)
@@ -88,6 +96,22 @@ int32 CONTROL_GetMouseSensitivity(void)
 void CONTROL_SetMouseSensitivity(int32 newsensitivity)
 {
 	CONTROL_MouseSensitivity = newsensitivity + MINIMUMMOUSESENSITIVITY;
+}
+
+void CONTROL_SetJoyAxisDead(int32 axis, int32 newdead)
+{
+    if ((unsigned)axis >= MAXJOYAXES) return;
+    if (newdead < 0) newdead = 0;
+    if (newdead > 32767) newdead = 32767;
+    CONTROL_JoyAxesDead[axis] = newdead;
+}
+
+void CONTROL_SetJoyAxisSaturate(int32 axis, int32 newsatur)
+{
+    if ((unsigned)axis >= MAXJOYAXES) return;
+    if (newsatur < 0) newsatur = 0;
+    if (newsatur > 32767) newsatur = 32767;
+    CONTROL_JoyAxesSaturate[axis] = newsatur;
 }
 
 boolean CONTROL_StartMouse(void)
@@ -106,10 +130,33 @@ void CONTROL_FilterJoyDelta(void)
 
 void CONTROL_GetJoyDelta( void )
 {
-	int32 i;
+	int32 i, delta, sign;
+    
+    // for paired axes, like with a dual-stick controller,
+    // it would make more sense to use a circular dead-zone
 	
-	for (i=0; i<joynumaxes; i++)
-		CONTROL_JoyAxes[i].analog = joyaxis[i] >> 5;
+	for (i=0; i<joynumaxes; i++) {
+        sign = (joyaxis[i] < 0) ? -1 : 1;
+        delta = abs(joyaxis[i]);
+        if (delta < CONTROL_JoyAxesDead[i]) {
+            delta = 0;
+        } else if (delta > CONTROL_JoyAxesSaturate[i]) {
+            delta = 32767;
+        } else {
+            // scale the axis delta value to cover the clipped range
+            delta = (32767 * (delta - CONTROL_JoyAxesDead[i]))
+                / (CONTROL_JoyAxesSaturate[i] - CONTROL_JoyAxesDead[i]);
+        }
+        
+        // apply a cube transform to make the axis react more strongly
+        // the further it is pushed. The multiply-dividing is to avoid
+        // overflowing the 32bit integer. It's really doing
+        //    (delta*delta*delta) / (32767*32767)
+        // to yield 0-32767
+        delta = (((delta * delta) / 32767) * delta) / 32767;
+        
+		CONTROL_JoyAxes[i].analog = delta * sign;
+    }
 }
 
 
@@ -439,8 +486,11 @@ void CONTROL_ClearAssignments( void )
 	memset(CONTROL_LastJoyAxes,         0,               sizeof(CONTROL_LastJoyAxes));
 	for (i=0;i<MAXMOUSEAXES;i++)
 		CONTROL_MouseAxesScale[i] = NORMALAXISSCALE;
-	for (i=0;i<MAXJOYAXES;i++)
+	for (i=0;i<MAXJOYAXES;i++) {
 		CONTROL_JoyAxesScale[i] = NORMALAXISSCALE;
+        CONTROL_JoyAxesDead[i] = 0;
+        CONTROL_JoyAxesSaturate[i] = 32767;
+    }
 }
 
 static void DoGetDeviceButtons(
@@ -585,35 +635,42 @@ void CONTROL_ScaleAxis(int32 axis, controldevice device)
 		default: return;
 	}
 
-	set[axis].analog = mulscale16(set[axis].analog, scale[axis]);
+    set[axis].analog = mulscale16(set[axis].analog, scale[axis]);
 }
 
 void CONTROL_ApplyAxis(int32 axis, ControlInfo *info, controldevice device)
 {
 	controlaxistype *set;
 	controlaxismaptype *map;
+    int32 shiftval;
 	
 	switch (device) {
 		case controldevice_mouse:
 			set = CONTROL_MouseAxes;
 			map = CONTROL_MouseAxesMap;
+            shiftval = 0;
 			break;
 
 		case controldevice_joystick:
 			set = CONTROL_JoyAxes;
 			map = CONTROL_JoyAxesMap;
+
+            // joystick axes are |0-32767| so chop them back to something
+            // closer to a mouse input range so the game sees similar sort
+            // of motion regardless of the device that contributed it
+            shiftval = 8;
 			break;
 
 		default: return;
 	}
 
 	switch (map[axis].analogmap) {
-		case analog_turning:          info->dyaw   += set[axis].analog; break;
-		case analog_strafing:         info->dx     += set[axis].analog; break;
-		case analog_lookingupanddown: info->dpitch += set[axis].analog; break;
-		case analog_elevation:        info->dy     += set[axis].analog; break;
-		case analog_rolling:          info->droll  += set[axis].analog; break;
-		case analog_moving:           info->dz     += set[axis].analog; break;
+		case analog_turning:          info->dyaw   += set[axis].analog >> shiftval; break;
+		case analog_strafing:         info->dx     += set[axis].analog >> shiftval; break;
+		case analog_lookingupanddown: info->dpitch += set[axis].analog >> shiftval; break;
+		case analog_elevation:        info->dy     += set[axis].analog >> shiftval; break;
+		case analog_rolling:          info->droll  += set[axis].analog >> shiftval; break;
+		case analog_moving:           info->dz     += set[axis].analog >> shiftval; break;
 		default: break;
 	}
 }
@@ -641,10 +698,6 @@ void CONTROL_PollDevices(ControlInfo *info)
 	}
 	if (CONTROL_JoystickEnabled) {
 		CONTROL_GetJoyDelta();
-
-		// Why?
-		//CONTROL_Axes[0].analog /= 2;
-		//CONTROL_Axes[2].analog /= 2;
 
 		for (i=0; i<MAXJOYAXES; i++) {
 			CONTROL_DigitizeAxis(i, controldevice_joystick);
