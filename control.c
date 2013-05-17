@@ -580,35 +580,43 @@ void CONTROL_GetDeviceButtons(void)
 void CONTROL_DigitizeAxis(int32 axis, controldevice device)
 {
 	controlaxistype *set, *lastset;
+	int32 delta, shiftval, threshold;
 	
 	switch (device) {
 		case controldevice_mouse:
 			set = CONTROL_MouseAxes;
 			lastset = CONTROL_LastMouseAxes;
+			shiftval = 0;
+			threshold = MINTHRESHOLD;
 			break;
 
 		case controldevice_joystick:
 			set = CONTROL_JoyAxes;
 			lastset = CONTROL_LastJoyAxes;
+			shiftval = 8;
+			threshold = THRESHOLD;
 			break;
 
-		default: return;
+		default:
+			return;
 	}
 	
-	if (set[axis].analog > 0) {
-		if (set[axis].analog > THRESHOLD) {			// if very much in one direction,
+	delta = set[axis].analog >> shiftval;
+
+	if (delta > 0) {
+		if (delta > threshold) {			// if very much in one direction,
 			set[axis].digital = 1;				// set affirmative
 		} else {
-			if (set[axis].analog > MINTHRESHOLD) {		// if hanging in limbo,
+			if (delta > MINTHRESHOLD) {		// if hanging in limbo,
 				if (lastset[axis].digital == 1)	// set if in same direction as last time
 					set[axis].digital = 1;
 			}
 		}
-	} else {
-		if (set[axis].analog < -THRESHOLD) {
+	} else if (delta < 0) {
+		if (delta < -threshold) {
 			set[axis].digital = -1;
 		} else {
-			if (set[axis].analog < -MINTHRESHOLD) {
+			if (delta < -MINTHRESHOLD) {
 				if (lastset[axis].digital == -1)
 					set[axis].digital = -1;
 			}

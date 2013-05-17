@@ -56,8 +56,8 @@ extern "C" {
 #define SENSITIVE        0x400
 //#define MINSENSITIVE     0x30
 
-#define THRESHOLD        0x200
-#define MINTHRESHOLD     0x80
+#define THRESHOLD        30
+#define MINTHRESHOLD     10
 
 #define USERINPUTDELAY   200
 
