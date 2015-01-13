@@ -543,65 +543,13 @@ const char * SCRIPT_GetRaw(int32 scripthandle, const char * sectionname, const c
 	return e->value;
 }
 
-boolean SCRIPT_GetString( int32 scripthandle, const char * sectionname, const char * entryname, char * dest )
-{
-	ScriptSectionType *s;
-	ScriptEntryType *e;
-	char *p, ch;
-	int c;
-
-	if (!SC(scripthandle)) return 1;
-	if (!SCRIPT(scripthandle,script)) return 1;
-
-	s = SCRIPT_SectionExists(scripthandle, sectionname);
-	e = SCRIPT_EntryExists(s, entryname);
-	
-	//dest[0] = 0;
-	if (!e) return 1;
-
-	p = e->value;
-	c = 0;
-		
-	if (*p == '\"') {
-		// quoted string
-		p++;
-		while ((ch = *(p++))) {
-			switch (ch) {
-				case '\\':
-					ch = *(p++);
-					switch (ch) {
-						case 0:   return 0;
-						case 'n': dest[c++] = '\n'; break;
-						case 'r': dest[c++] = '\r'; break;
-						case 't': dest[c++] = '\t'; break;
-						default:  dest[c++] = ch; break;
-					}
-					break;
-				case '\"':
-					dest[c] = 0;
-					return 0;
-				default:
-					dest[c++] = ch;
-					break;
-			}
-		}
-	} else {
-		while ((ch = *(p++))) {
-			if (ch == ' ' || ch == '\t') { dest[c] = 0; break; }
-			else dest[c++] = ch;
-		}
-	}
-
-	return 0;
-}
-
-boolean SCRIPT_GetDoubleString( int32 scripthandle, const char * sectionname, const char * entryname, char * dest1, char * dest2 )
+boolean SCRIPT_GetString( int32 scripthandle, const char * sectionname, const char * entryname, char * dest, size_t destlen )
 {
 	ScriptSectionType *s;
 	ScriptEntryType *e;
 	const char *p;
-    char ch;
-	int c,d=0;
+	char ch, done;
+	size_t c;
 
 	if (!SC(scripthandle)) return 1;
 	if (!SCRIPT(scripthandle,script)) return 1;
@@ -609,79 +557,170 @@ boolean SCRIPT_GetDoubleString( int32 scripthandle, const char * sectionname, co
 	s = SCRIPT_SectionExists(scripthandle, sectionname);
 	e = SCRIPT_EntryExists(s, entryname);
 	
-	//dest1[0] = 0;
-	//dest2[0] = 0;
 	if (!e) return 1;
+	if (destlen < 1) return 1;
+
+	// Deduct the terminating null.
+	destlen--;
 
 	p = e->value;
 	c = 0;
+	done = 0;
 		
 	if (*p == '\"') {
 		// quoted string
 		p++;
-		while ((ch = *(p++))) {
+		while (!done && (ch = *(p++))) {
 			switch (ch) {
 				case '\\':
 					ch = *(p++);
-					switch (ch) {
-						case 0:   return 0;
-						case 'n': dest1[c++] = '\n'; break;
-						case 'r': dest1[c++] = '\r'; break;
-						case 't': dest1[c++] = '\t'; break;
-						default:  dest1[c++] = ch; break;
+					if (ch == 0) {
+						done = 1;
+					} else if (c < destlen) {
+						switch (ch) {
+							case 'n': dest[c++] = '\n'; break;
+							case 'r': dest[c++] = '\r'; break;
+							case 't': dest[c++] = '\t'; break;
+							default:  dest[c++] = ch; break;
+						}
 					}
 					break;
 				case '\"':
-					dest1[c] = 0;
-					goto breakme;
+					done = 1;
+					break;
 				default:
-					dest1[c++] = ch;
+					if (c < destlen) {
+						dest[c++] = ch;
+					}
 					break;
 			}
 		}
-		if (ch == 0) return 0;
 	} else {
 		while ((ch = *(p++))) {
-			if (ch == ' ' || ch == '\t') { dest1[c] = 0; break; }
-			else dest1[c++] = ch;
+			if (ch == ' ' || ch == '\t') {
+				break;
+			} else if (c < destlen) {
+				dest[c++] = ch;
+			}
 		}
 	}
 
-breakme:
+	dest[c] = 0;
+
+	return 0;
+}
+
+boolean SCRIPT_GetDoubleString( int32 scripthandle, const char * sectionname, const char * entryname, char * dest1, char * dest2, size_t dest1len, size_t dest2len )
+{
+	ScriptSectionType *s;
+	ScriptEntryType *e;
+	const char *p;
+    char ch, done;
+	size_t c;
+
+	if (!SC(scripthandle)) return 1;
+	if (!SCRIPT(scripthandle,script)) return 1;
+
+	s = SCRIPT_SectionExists(scripthandle, sectionname);
+	e = SCRIPT_EntryExists(s, entryname);
+	
+	if (!e) return 1;
+	if (dest1len < 1) return 1;
+	if (dest2len < 1) return 1;
+
+	// Deduct the terminating nulls.
+	dest1len--;
+	dest2len--;
+
+	p = e->value;
+	c = 0;
+	done = 0;
+		
+	if (*p == '\"') {
+		// quoted string
+		p++;
+		while (!done && (ch = *(p++))) {
+			switch (ch) {
+				case '\\':
+					ch = *(p++);
+					if (ch == 0) {
+						done = 1;
+					} else if (c < dest1len) {
+						switch (ch) {
+							case 'n': dest1[c++] = '\n'; break;
+							case 'r': dest1[c++] = '\r'; break;
+							case 't': dest1[c++] = '\t'; break;
+							default:  dest1[c++] = ch; break;
+						}
+					}
+					break;
+				case '\"':
+					done = 1;
+					break;
+				default:
+					if (c < dest1len) {
+						dest1[c++] = ch;
+					}
+					break;
+			}
+		}
+	} else {
+		while ((ch = *(p++))) {
+			if (ch == ' ' || ch == '\t') {
+				break;
+			} else if (c < dest1len) {
+				dest1[c++] = ch;
+			}
+		}
+	}
+
+	dest1[c] = 0;
+
 	while (*p == ' ' || *p == '\t') p++;
 	if (*p == 0) return 0;
 
 	c = 0;
+	done = 0;
 		
 	if (*p == '\"') {
 		// quoted string
 		p++;
-		while ((ch = *(p++))) {
+		while (!done && (ch = *(p++))) {
 			switch (ch) {
 				case '\\':
 					ch = *(p++);
-					switch (ch) {
-						case 0:   return 0;
-						case 'n': dest2[c++] = '\n'; break;
-						case 'r': dest2[c++] = '\r'; break;
-						case 't': dest2[c++] = '\t'; break;
-						default:  dest2[c++] = ch; break;
+					if (ch == 0) {
+						done = 1;
+					} else if (c < dest2len) {
+						switch (ch) {
+							case 'n': dest2[c++] = '\n'; break;
+							case 'r': dest2[c++] = '\r'; break;
+							case 't': dest2[c++] = '\t'; break;
+							default:  dest2[c++] = ch; break;
+						}
 					}
 					break;
 				case '\"':
-					dest2[c] = 0;
-					return 0;
+					done = 1;
+					break;
 				default:
-					dest2[c++] = ch;
+					if (c < dest2len) {
+						dest2[c++] = ch;
+					}
 					break;
 			}
 		}
 	} else {
 		while ((ch = *(p++))) {
-			if (ch == ' ' || ch == '\t') { dest2[c] = 0; break; }
-			else dest2[c++] = ch;
+			if (ch == ' ' || ch == '\t') {
+				break;
+			} else if (c < dest2len) {
+				dest2[c++] = ch;
+			}
 		}
 	}
+
+	dest2[c] = 0;
 
 	return 0;
 }

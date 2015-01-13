@@ -144,7 +144,8 @@ boolean SCRIPT_GetString
    int32 scripthandle,
    const char * sectionname,
    const char * entryname,
-   char * dest
+   char * dest,
+   size_t destlen
    );
 
 /*
@@ -160,7 +161,9 @@ boolean SCRIPT_GetDoubleString
    const char * sectionname,
    const char * entryname,
    char * dest1,
-   char * dest2
+   char * dest2,
+   size_t dest1len,
+   size_t dest2len
    );
 
 /*
