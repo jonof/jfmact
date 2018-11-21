@@ -556,15 +556,6 @@ void CONTROL_GetDeviceButtons(void)
 
 	if (CONTROL_JoystickEnabled) {
 		int32 buttons = joyb;
-		if (joynumhats > 0 && joyhat[0] != -1) {
-			static int32 hatstate[] = { 1, 1|2, 2, 2|4, 4, 4|8, 8, 8|1 };
-			int val;
-
-			// thanks SDL for this much more sensible method
-			val = ((joyhat[0] + 4500 / 2) % 36000) / 4500;
-			if (val < 8) buttons |= hatstate[val] << min(MAXJOYBUTTONS,joynumbuttons);
-		}
-
 		DoGetDeviceButtons(
 			buttons, t,
 			CONTROL_NumJoyButtons,
@@ -925,7 +916,7 @@ boolean CONTROL_Startup(controltype which, int32 ( *TimeFunction )( void ), int3
 
 	//	case controltype_keyboardandjoystick:
 			CONTROL_NumJoyAxes    = min(MAXJOYAXES,joynumaxes);
-			CONTROL_NumJoyButtons = min(MAXJOYBUTTONS,joynumbuttons + 4*(joynumhats>0));
+			CONTROL_NumJoyButtons = min(MAXJOYBUTTONS,joynumbuttons);
 			CONTROL_JoyPresent    = CONTROL_StartJoy(0);
 			CONTROL_JoystickEnabled = CONTROL_JoyPresent;
 	//		break;
