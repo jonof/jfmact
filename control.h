@@ -46,18 +46,8 @@ extern "C" {
 
 #define MAXGAMEBUTTONS      64
 
-#define BUTTON(x) \
-    ( \
-    ((x)>31) ? \
-    ((CONTROL_ButtonState2>>( (x) - 32) ) & 1) :\
-    ((CONTROL_ButtonState1>> (x) ) & 1)          \
-    )
-#define BUTTONHELD(x) \
-    ( \
-    ((x)>31) ? \
-    ((CONTROL_ButtonHeldState2>>((x)-32)) & 1) :\
-    ((CONTROL_ButtonHeldState1>>(x)) & 1)\
-    )
+#define BUTTON(x) CONTROL_Button(x)
+#define BUTTONHELD(x) CONTROL_ButtonHeld(x)
 #define BUTTONJUSTPRESSED(x) \
     ( BUTTON( x ) && !BUTTONHELD( x ) )
 #define BUTTONRELEASED(x) \
@@ -217,10 +207,42 @@ void CONTROL_SetAnalogAxisScale
    int32 axisscale,
    controldevice device
    );
-    
+
 void CONTROL_PrintKeyMap(void);
 void CONTROL_PrintControlFlag(int32 which);
 void CONTROL_PrintAxes( void );
+
+static inline boolean CONTROL_Button(uint32 which)
+   {
+   if (which > 63)
+      {
+      return FALSE;
+      }
+   else if (which > 31)
+      {
+      return ((CONTROL_ButtonState2 >> ((which-32))) & 1) == 1;
+      }
+   else
+      {
+      return ((CONTROL_ButtonState1 >> (which)) & 1) == 1;
+      }
+   }
+
+static inline boolean CONTROL_ButtonHeld(uint32 which)
+   {
+   if (which > 63)
+      {
+      return FALSE;
+      }
+   else if (which > 31)
+      {
+      return ((CONTROL_ButtonHeldState2 >> ((which-32))) & 1) == 1;
+      }
+   else
+      {
+      return ((CONTROL_ButtonHeldState1 >> (which)) & 1) == 1;
+      }
+   }
 
 #ifdef __cplusplus
 };
