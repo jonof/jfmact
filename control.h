@@ -124,6 +124,25 @@ typedef enum
    controldevice_joystick
    } controldevice;
 
+typedef enum
+   {
+   joybutton_A,
+   joybutton_B,
+   joybutton_X,
+   joybutton_Y,
+   joybutton_Back,
+   joybutton_Guide,
+   joybutton_Start,
+   joybutton_LeftStick,
+   joybutton_RightStick,
+   joybutton_LeftShoulder,
+   joybutton_RightShoulder,
+   joybutton_DpadUp,
+   joybutton_DpadDown,
+   joybutton_DpadLeft,
+   joybutton_DpadRight
+   } joybutton;
+
 
 //***************************************************************************
 //

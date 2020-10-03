@@ -794,6 +794,15 @@ void CONTROL_GetUserInput( UserInput *info )
 		else if (CONTROL_JoyAxes[0].digital == 1)
 			info->dir = dir_East;
 
+		if (CONTROL_JoyButtonState[joybutton_DpadUp])
+            info->dir = dir_North;
+		else if (CONTROL_JoyButtonState[joybutton_DpadDown])
+            info->dir = dir_South;
+		else if (CONTROL_JoyButtonState[joybutton_DpadLeft])
+            info->dir = dir_West;
+		else if (CONTROL_JoyButtonState[joybutton_DpadRight])
+            info->dir = dir_East;
+
         if (KB_KeyDown[sc_kpad_8] || KB_KeyDown[sc_UpArrow])
             info->dir = dir_North;
         else if (KB_KeyDown[sc_kpad_2] || KB_KeyDown[sc_DownArrow])
@@ -804,8 +813,8 @@ void CONTROL_GetUserInput( UserInput *info )
             info->dir = dir_East;
     }
 
-	info->button0 = CONTROL_MouseButtonState[0] | CONTROL_JoyButtonState[0];
-	info->button1 = CONTROL_MouseButtonState[1] | CONTROL_JoyButtonState[1];
+	info->button0 = CONTROL_MouseButtonState[0] | CONTROL_JoyButtonState[joybutton_A];
+	info->button1 = CONTROL_MouseButtonState[1] | CONTROL_JoyButtonState[joybutton_B];
 
 	if (KB_KeyDown[BUTTON0_SCAN_1] || KB_KeyDown[BUTTON0_SCAN_2] || KB_KeyDown[BUTTON0_SCAN_3])
 		info->button0 = 1;
