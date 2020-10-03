@@ -813,8 +813,8 @@ void CONTROL_GetUserInput( UserInput *info )
             info->dir = dir_East;
     }
 
-	info->button0 = CONTROL_MouseButtonState[0] | CONTROL_JoyButtonState[joybutton_A];
-	info->button1 = CONTROL_MouseButtonState[1] | CONTROL_JoyButtonState[joybutton_B];
+	info->button0 = CONTROL_MouseButtonState[mousebutton_Left] | CONTROL_JoyButtonState[joybutton_A];
+	info->button1 = CONTROL_MouseButtonState[mousebutton_Right] | CONTROL_JoyButtonState[joybutton_B];
 
 	if (KB_KeyDown[BUTTON0_SCAN_1] || KB_KeyDown[BUTTON0_SCAN_2] || KB_KeyDown[BUTTON0_SCAN_3])
 		info->button0 = 1;

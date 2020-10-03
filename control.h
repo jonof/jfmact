@@ -126,6 +126,16 @@ typedef enum
 
 typedef enum
    {
+   mousebutton_Left,
+   mousebutton_Right,
+   mousebutton_Middle,
+   mousebutton_Thumb,
+   mousebutton_WheelUp,
+   mousebutton_WheelDown
+   } mousebutton;
+
+typedef enum
+   {
    joybutton_A,
    joybutton_B,
    joybutton_X,
