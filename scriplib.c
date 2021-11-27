@@ -242,7 +242,7 @@ int32 SCRIPT_ParseBuffer(int32 scripthandle, char *data, int32 length)
 	int expect;
 	int linenum=1;
 	int rv = 0;
-#define SETRV(v) if (v>rv||rv==0) rv=v
+#define SETRV(v) if (v>rv||rv==0) rv=v;
 
 	if (!data) return 1;
 	if (length < 0) return 1;
@@ -305,6 +305,7 @@ int32 SCRIPT_ParseBuffer(int32 scripthandle, char *data, int32 length)
 			case ParsingSectionBegin:
 				currentsection = dp = sp;
 				state = ParsingSectionName;
+				// fall through
 			case ParsingSectionName:
 				LETTER();
 				switch (ch) {
@@ -337,6 +338,9 @@ int32 SCRIPT_ParseBuffer(int32 scripthandle, char *data, int32 length)
 						EATLINE(sp);
 						printf("Unexpected comment on line %d.\n", linenum);
 						SETRV(-1);
+						state = ParsingIdle;
+						continue;
+
 					case '\n':
 					case '\r':
 						// Unexpected newline
@@ -362,6 +366,7 @@ int32 SCRIPT_ParseBuffer(int32 scripthandle, char *data, int32 length)
 			case ParsingValueBegin:
 				currentvalue = dp = sp;
 				state = ParsingValue;
+				// fall through
 			case ParsingValue:
 				LETTER();
 				switch (ch) {

@@ -219,6 +219,7 @@ char KB_Getch( void )
 
 void KB_Addch( char ch )
 {
+	(void)ch;
 }
 
 void KB_FlushKeyboardQueue( void )

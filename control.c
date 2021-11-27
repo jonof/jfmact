@@ -173,15 +173,22 @@ void CONTROL_CenterJoystick
    void ( *CenterRudder )( void )
    )
 {
+   (void)CenterCenter;
+   (void)UpperLeft;
+   (void)LowerRight;
+   (void)CenterThrottle;
+   (void)CenterRudder;
 }
 
 boolean CONTROL_StartJoy(int32 joy)
 {
+	(void)joy;
 	return (inputdevices & 4) == 4;
 }
 
 void CONTROL_ShutJoy(int32 joy)
 {
+	(void)joy;
 	CONTROL_JoyPresent = false;
 }
 
@@ -893,6 +900,8 @@ boolean CONTROL_Startup(controltype which, int32 ( *TimeFunction )( void ), int3
 	int32 i;
 	char *p;
 	
+	(void)which;
+
 	if (CONTROL_Started) return false;
 
 	if (TimeFunction) GetTime = TimeFunction;

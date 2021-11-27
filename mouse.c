@@ -77,6 +77,7 @@ int32 MOUSE_ClearButton( int32 b )
 
 void MOUSE_GetPosition( int32*x, int32*y  )
 {
+	(void)x; (void)y;
 }
 
 
