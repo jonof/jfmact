@@ -65,7 +65,7 @@ int32 SafeOpen(const char *filename, int32 mode, int32 sharemode)
 
 	if (h < MaxFiles) {
 		if (FileNames[h]) SafeFree(FileNames[h]);
-		FileNames[h] = (char*)SafeMalloc(strlen(filename)+1);
+		FileNames[h] = (char*)SafeMalloc((int)strlen(filename)+1);
 		if (FileNames[h]) strcpy(FileNames[h], filename);
 	}
 
@@ -74,8 +74,6 @@ int32 SafeOpen(const char *filename, int32 mode, int32 sharemode)
 
 int32 SafeOpenRead(const char *filename, int32 filetype)
 {
-	int32 h;
-
 	switch (filetype) {
 		case filetype_binary:
 			return SafeOpen(filename, O_RDONLY|O_BINARY, S_IREAD);
@@ -89,8 +87,6 @@ int32 SafeOpenRead(const char *filename, int32 filetype)
 
 void SafeClose ( int32 handle )
 {
-	int r;
-
 	if (handle < 0) return;
 	if (close(handle) < 0) {
 		if (handle < MaxFiles)
@@ -114,14 +110,14 @@ boolean SafeFileExists(const char *filename)
 int32 SafeFileLength ( int32 handle )
 {
 	if (handle < 0) return -1;
-	return Bfilelength(handle);
+	return (int32)Bfilelength(handle);
 }
 
 void SafeRead(int32 handle, void *buffer, int32 count)
 {
 	int32 b;
 
-	b = read(handle, buffer, count);
+	b = (int32)read(handle, buffer, count);
 	if (b != count) {
 		close(handle);
 		if (handle < MaxFiles)

@@ -898,8 +898,7 @@ void CONTROL_Ack( void )
 boolean CONTROL_Startup(controltype which, int32 ( *TimeFunction )( void ), int32 ticspersecond)
 {
 	int32 i;
-	char *p;
-	
+
 	(void)which;
 
 	if (CONTROL_Started) return false;
@@ -921,24 +920,15 @@ boolean CONTROL_Startup(controltype which, int32 ( *TimeFunction )( void ), int3
 	CONTROL_NumMouseAxes    = CONTROL_NumJoyAxes    = 0;
 	KB_Startup();
 
-	//switch (which) {
-	//	case controltype_keyboard:
-	//		break;
+	CONTROL_NumMouseAxes      = MAXMOUSEAXES;
+	CONTROL_NumMouseButtons   = MAXMOUSEBUTTONS;
+	CONTROL_MousePresent      = MOUSE_Init();
+	CONTROL_MouseEnabled      = CONTROL_MousePresent;
 
-	//	case controltype_keyboardandmouse:
-			CONTROL_NumMouseAxes      = MAXMOUSEAXES;
-			CONTROL_NumMouseButtons   = MAXMOUSEBUTTONS;
-			CONTROL_MousePresent      = MOUSE_Init();
-			CONTROL_MouseEnabled      = CONTROL_MousePresent;
-	//		break;
-
-	//	case controltype_keyboardandjoystick:
-			CONTROL_NumJoyAxes    = min(MAXJOYAXES,joynumaxes);
-			CONTROL_NumJoyButtons = min(MAXJOYBUTTONS,joynumbuttons);
-			CONTROL_JoyPresent    = CONTROL_StartJoy(0);
-			CONTROL_JoystickEnabled = CONTROL_JoyPresent;
-	//		break;
-	//}
+	CONTROL_NumJoyAxes    = min(MAXJOYAXES,joynumaxes);
+	CONTROL_NumJoyButtons = min(MAXJOYBUTTONS,joynumbuttons);
+	CONTROL_JoyPresent    = CONTROL_StartJoy(0);
+	CONTROL_JoystickEnabled = CONTROL_JoyPresent;
 	
 	if (CONTROL_MousePresent)
 		buildprintf("CONTROL_Startup: Mouse Present\n");

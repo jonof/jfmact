@@ -105,12 +105,12 @@ void SafeRealloc (void ** ptr, int32 newsize)
 
 int32 ParseHex (char *hex)
 {
-	return strtol(hex, NULL, 16);
+	return (int32)strtol(hex, NULL, 16);
 }
 
 int32 ParseNum (char *str)
 {
-	return strtol(str, NULL, 10);
+	return (int32)strtol(str, NULL, 10);
 }
 
 int16 MotoShort (int16 l)

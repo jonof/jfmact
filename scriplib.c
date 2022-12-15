@@ -415,8 +415,9 @@ void SCRIPT_Free( int32 scripthandle )
 	SCRIPT_Delete(scripthandle);
 }
 
-int32 SCRIPT_Parse ( char *UNUSED(data), int32 UNUSED(length), char * UNUSED(name) )
+int32 SCRIPT_Parse ( char * data, int32 length, char * name )
 {
+	(void)data; (void)length; (void)name;
 	return 0;
 }
 
@@ -746,11 +747,11 @@ boolean SCRIPT_GetNumber( int32 scripthandle, const char * sectionname, const ch
 	else {
 		if (e->value[0] == '0' && e->value[1] == 'x') {
 			// hex
-			*number = strtol(e->value+2, &p, 16);
+			*number = (int32)strtol(e->value+2, &p, 16);
 			if (p == e->value || *p != 0 || *p != ' ' || *p != '\t') return 1;
 		} else {
 			// decimal
-			*number = strtol(e->value, &p, 10);
+			*number = (int32)strtol(e->value, &p, 10);
 			if (p == e->value || *p != 0 || *p != ' ' || *p != '\t') return 1;
 		}
 	}
@@ -780,10 +781,12 @@ boolean SCRIPT_GetBoolean( int32 scripthandle, const char * sectionname, const c
 	return 0;
 }
 
-boolean SCRIPT_GetDouble( int32 scripthandle, const char * sectionname, const char * entryname, double * UNUSED(number) )
+boolean SCRIPT_GetDouble( int32 scripthandle, const char * sectionname, const char * entryname, double * number )
 {
 	ScriptSectionType *s;
 	ScriptEntryType *e;
+
+	(void)number;
 
 	if (!SC(scripthandle)) return 1;
 	if (!SCRIPT(scripthandle,script)) return 1;
@@ -799,24 +802,25 @@ boolean SCRIPT_GetDouble( int32 scripthandle, const char * sectionname, const ch
 	return 0;
 }
 
-void SCRIPT_PutComment( int32 UNUSED(scripthandle), const char * UNUSED(sectionname), const char * UNUSED(comment) )
+void SCRIPT_PutComment( int32 scripthandle, const char * sectionname, const char * comment )
 {
-    //XXX
+    (void)scripthandle; (void)sectionname; (void)comment;
 }
 
-void SCRIPT_PutEOL( int32 UNUSED(scripthandle), const char * UNUSED(sectionname) )
+void SCRIPT_PutEOL( int32 scripthandle, const char * sectionname )
 {
-    //XXX
+    (void)scripthandle; (void)sectionname;
 }
 
 void SCRIPT_PutMultiComment
    (
-   int32 UNUSED(scripthandle),
-   const char * UNUSED(sectionname),
-   const char * UNUSED(comment),
+   int32 scripthandle,
+   const char * sectionname,
+   const char * comment,
    ...
    )
 {
+	(void)scripthandle; (void)sectionname; (void)comment;
 }
 
 void SCRIPT_PutSection( int32 scripthandle, const char * sectionname )
@@ -924,10 +928,12 @@ void SCRIPT_PutNumber
    const char * entryname,
    int32 number,
    boolean hexadecimal,
-   boolean UNUSED(defaultvalue)
+   boolean defaultvalue
    )
 {
 	char raw[64];
+
+	(void)defaultvalue;
 
 	if (hexadecimal) sprintf(raw, "0x%X", number);
 	else sprintf(raw, "%d", number);
@@ -956,10 +962,12 @@ void SCRIPT_PutDouble
    const char * sectionname,
    const char * entryname,
    double number,
-   boolean UNUSED(defaultvalue)
+   boolean defaultvalue
    )
 {
 	char raw[64];
+
+	(void)defaultvalue;
 
 	sprintf(raw, "%g", number);
 
