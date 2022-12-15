@@ -178,7 +178,7 @@ typedef uint8 kb_scancode;
 
 //extern byte  KB_KeyDown[ MAXKEYBOARDSCAN ];   // Keyboard state array
 #define KB_KeyDown keystatus
-extern kb_scancode KB_LastScan;
+// extern kb_scancode KB_LastScan;
 
 
 /*
@@ -189,11 +189,11 @@ extern kb_scancode KB_LastScan;
 =============================================================================
 */
 
-#define KB_GetLastScanCode()    ( KB_LastScan )
+#define KB_GetLastScanCode()   bgetkey()    // ( KB_LastScan )
 
-#define KB_SetLastScanCode( scancode ) { KB_LastScan = ( scancode ); }
+// #define KB_SetLastScanCode( scancode ) { KB_LastScan = ( scancode ); }
 
-#define KB_ClearLastScanCode() { KB_SetLastScanCode( sc_None ); }
+#define KB_ClearLastScanCode() bflushkeys() // { KB_SetLastScanCode( sc_None ); }
 
 #define KB_KeyPressed( scan )  ( keystatus[ ( scan ) ] != 0 )
 

@@ -197,23 +197,10 @@ static char sctoasc[2][256] = {
 boolean KB_KeyWaiting( void )
 {
 	return bkbhit();
-//	return (keyfifoplc != keyfifoend);
 }
 
 char KB_Getch( void )
 {
-/*
-	unsigned char ch;
-	char shifted;
-	if (keyfifoplc == keyfifoend) return 0;
-	ch = keyfifo[keyfifoplc];
-	keyfifoplc = ((keyfifoplc+2)&(KEYFIFOSIZ-1));
-
-	shifted = ((keystatus[0x2a]!=0)||(keystatus[0x36]!=0));
-	if (ch >= 0x47 && ch <= 0x52) shifted = numpad;
-	
-	return sctoasc[shifted][ch];
-*/
 	return (char)bgetchar();
 }
 
@@ -224,7 +211,6 @@ void KB_Addch( char ch )
 
 void KB_FlushKeyboardQueue( void )
 {
-	//keyfifoplc = keyfifoend = 0;
 	bflushchars();
 }
 
@@ -232,8 +218,6 @@ void KB_ClearKeysDown( void )
 {
 	KB_LastScan = 0;
 	memset(keystatus, 0, sizeof(keystatus));
-	//keyfifoplc = keyfifoend = 0;
-	//bflushchars();
 }
 
 char *KB_ScanCodeToString( kb_scancode scancode )
@@ -271,19 +255,11 @@ boolean KB_KeypadActive( void )
 	return numpad;
 }
 
-static void KB_KeyEvent( int scancode, int keypressed )
-{
-	if (keypressed) KB_LastScan = scancode;
-}
-
 void KB_Startup( void )
 {
-	numpad = 0;
-	setkeypresscallback(KB_KeyEvent);
 }
 
 void KB_Shutdown( void )
 {
-	setkeypresscallback(NULL);
 }
 
