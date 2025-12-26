@@ -47,23 +47,25 @@ void RegisterShutdownFunction( void (* sh) (void) )
 	ShutDown = sh;
 }
 
-#ifndef RENDERTYPEWIN
 void Error(const char *error, ...)
 {
-	va_list va;
-
 	if (ShutDown) ShutDown();
 
 	if (error) {
-		va_start(va, error);
-		vprintf(error, va);
+		va_list va;
+		char *buf = NULL;
+
+		va_start(va,error);
+		(void)Bvasprintf(&buf,error,va);
 		va_end(va);
-		printf("\n\n");
+
+		wm_msgbox("Fatal Error", "%s", buf);
+
+		if (buf) free(buf);
 	}
 
 	exit((error != NULL));
 }
-#endif
 
 char CheckParm(char *check)
 {
